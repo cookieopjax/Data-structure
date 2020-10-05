@@ -15,7 +15,7 @@ void bubbleSort(char *a[],int n){
 	}
 }
 
-char toUpper(char str[]){
+char change(char str[]){
 	int i = 0;
 	while(str[i]){
       str[i] = toupper(str[i]);
@@ -26,11 +26,9 @@ char toUpper(char str[]){
 int main(){
 	char a[300][300];
 	char input[20];
-	char output[300][300];
-	int countOutput[300];
 	int counter = 0;
 	FILE* fp_r = fopen("input_1.txt", "r");
-    FILE* fp_w = fopen("write.txt", "w");
+    FILE* fp_w = fopen("output.txt", "w");
 
 	if(fp_r == NULL || fp_w == NULL){
         printf("開檔失敗!\n");
@@ -38,13 +36,10 @@ int main(){
     }
 
     while(fscanf(fp_r, " %s", input) != EOF){
-        //printf("%s ",input);
-        toUpper(input);
-        //printf("(%s) ",input);
+        change(input);
     	strcpy(a[counter],input);
         counter++;
     }
-    printf("\n處理完成\n");
 
     int n = counter;
 	char temp[500];
@@ -57,39 +52,26 @@ int main(){
 			}
 		}
 	}
-	printf("counter=%d\n",counter);
-	int finalCounter = 0;
-
-	for(int i=0;i<counter;i++){
-		int flag = 0;
-		int j=0;
-		for(;j<finalCounter;j++){
-			printf("now");
-			if(strcmp(a[i],output[j])==0)
-				flag = 1;
-		}
-
-		if(flag == 1){
-			countOutput[j]++;
-			printf("1");
+	printf("單字                     出現次數\n------------------------------------\n");
+	int count = 1;
+	for(int i=0;i<counter-1;i++){
+		if(strcmp(a[i],a[i+1])==0){
+			count++;
 		}
 		else{
-			printf("2");
-			strcpy(a[i],output[finalCounter]);
-			countOutput[finalCounter] = 1;
-			finalCounter++;
+			printf("%s",a[i]);
+			for (int j=0;j<(27-strlen(a[i]));j++) {
+				printf(" ");
+			}
+			printf("%d\n",count);
+			count = 1;
 		}
 
 	}
 
-
-    for(int i=0;i<finalCounter;i++){
-		printf("%s\n",output[i]);
+	for (int i = 0; i < counter; i++) {
+		fprintf(fp_w, "%s\n",a[i]);
 	}
-	for(int i=0;i<finalCounter;i++){
-		printf("%s\n",countOutput[i]);
-	}
-
     fclose(fp_r);
     fclose(fp_w);
 
