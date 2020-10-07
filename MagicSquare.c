@@ -5,42 +5,48 @@ void printSquare(int **a, int n){
     printf("開始輸出陣列:\n");
     for(int i = 0; i < n; i++){
         for(int j = 0; j < n; j++){
-            printf("%2d ",a[i][j]);
+            printf("%3d ",a[i][j]);
         }
         printf("\n");
     }
 }
-//向左上移動
+int isfiled(int **a, int n){
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++)
+            if(a[i][j] == 0)
+                return 0;
+    return 1;
+}
 void generateSquare(int **a, int n, int x, int y,int counter){
-    /*if((x!=0)&&(y!=0)){//上面左邊皆有空間
-        a[x-1][y-1] = counter;
-        x = x - 1;
-        y = y - 1;
-        generateSquare(a,n,x,y,counter+1);
-    }*/
-    if(counter > n*n+1)
+    if(isfiled(a,n))
         return;
-    printSquare(a,n);
-    printf("\n====\n");
-    int i, j;
-    if(x-1 < 0)
-        i = n-1;
-    else
-        i = x-1;
-    if(y-1 < 0)
-        j = n-1;
-    else
-        j = y-1;
+    int tempX = x;
+    int tempY = y;
+    //[0,2]->[4,1]
+	tempX = x - 1;
+	tempY = y - 1;
+	if (tempX < 0) tempX = n - 1;
+	if (tempY < 0) tempY = n - 1;
 
-    if(a[i][j])
-        x = (++x) % n;
-    else{
-        x = i;
-        y = (y-1<0) ? (n-1):--y;
+    if(!(a[tempX][tempY])){
+        a[tempX][tempY] = counter;
+        x = tempX;
+        y = tempY;
+        generateSquare(a,n,x,y,counter+1);
     }
-    a[x][y] = counter;
+    else{
+        tempX = x;
+        tempY = y;
+        if(tempX + 1 == n)
+            tempX = 0;
+        else
+            tempX++;
 
-    generateSquare(a,n,x,y,counter+1);
+        a[tempX][tempY] = counter;
+        x = tempX;
+        y = tempY;
+        generateSquare(a,n,x,y,counter+1);
+    }
 
 }
 
@@ -55,6 +61,6 @@ int main(){
         square[i] = (int*)calloc(n,sizeof(int));
     square[0][(n-1)/2] = 1;
     generateSquare(square,n,0,(int)((n-1)/2),2);
-    //printSquare(square,n);
+    printSquare(square,n);
 
 }
