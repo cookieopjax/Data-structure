@@ -7,34 +7,34 @@ typedef struct Nodes{
     struct Nodes *next;
 }node;
 
-node *head = NULL;
-node *heads = NULL;
+//node *head = NULL;
 
-void Insert(int coefficients, int powers){
+void Insert(int coefficients, int powers, node **head){
     node *newNode = (node*)malloc(sizeof(node));
     newNode->coefficient = coefficients;
     newNode->power = powers;
     newNode->next = NULL;
 
-	if (head == NULL) {
-		head = newNode;
+	if (*head == NULL) {
+		*head = newNode;
 		return ;
 	}
-	node *current = head;
-	while ((current!= NULL)||(current == head)){
+	node *current = *head;//ptr
+	while ((current!= NULL)||(current == *head)){
         //printf("/迴圈time/\n");
         //traveral();
-        //printf("-->(new(%d,%d),cur(%d,%d)---",newNode->coefficient,newNode->power,current->coefficient,current->power);
+        //如何印head的值?<----
+        //printf("->head(%d,%d),new(%d,%d),cur(%d,%d)-",(*head)->coefficient,(*head)->power,newNode->coefficient,newNode->power,current->coefficient,current->power);
         if((newNode->power) == (current->power)) {
             //printf("重複ㄌ\n");
             current->coefficient += newNode->coefficient;
             return;
         }
 
-        if((newNode->power)>(head->power)) {//insert head *4 3 (insert 5)
+        if((newNode->power)>((*head)->power)) {//insert head *4 3 (insert 5)
             //printf("投\n");
-            head = newNode;
-            head->next = current;
+            *head = newNode;
+            (*head)->next = current;
             return;
 
         }
@@ -45,121 +45,94 @@ void Insert(int coefficients, int powers){
             newNode->next = NULL;
             return;
         }
-        /*
-        if((newNode->power)<(current->power) && (current->next->next == NULL)) {
-            printf(" 我是最後面的2\n");
-            current->next->next= newNode;
-            newNode->next = NULL;
-            return;
-        }*/
         if( ((newNode->power)<(current->power)) && ((newNode->power)>(current->next->power)) ) {//insert middle 5 3 (insert:4)
             //printf(" 我在中間喔\n ");
             newNode->next = current->next;
             current->next = newNode;
             return;
 		}
-        printf("*\n");
+        //printf("\n");
         current = current->next;
 	}
 }
-void traveral() {
-	if (head == NULL) {
+void traveral(node **head) {
+	if (*head == NULL) {
 		printf("The list is empty！\n");
 		return;
 	}
 
-	node *current = head;
+	node *current = *head;
     printf("多項式為:");
-	while (current != NULL) {
-		printf("%d^%d ",current->coefficient, current->power);
+	while (current!= NULL) {
+		printf("%dx^%d ",current->coefficient, current->power);
 		current = current->next;
 	}
 	printf("\n");
 }
 
-void Inserts(int coefficients, int powers){
+void add(node **head1, node **head2, node **headAfterAdd) {
+    //9x^9+4x^5+3x^3+6x^2+8
+    //5x^6+2x^3+5x+2
+    printf("相加結果:");
+    node *current = *headAfterAdd;
+    node *cur1 = *head1;
+    node *cur2 = *head2;
     node *newNode = (node*)malloc(sizeof(node));
-    newNode->coefficient = coefficients;
-    newNode->power = powers;
-    newNode->next = NULL;
 
-	if (heads == NULL) {
-		heads = newNode;
-		return ;
-	}
-	node *current = heads;
-	while ((current!= NULL)||(current == heads)){
-        //printf("/迴圈time/\n");
-        traveral();
-        printf("-->(new(%d,%d),cur(%d,%d)---",newNode->coefficient,newNode->power,current->coefficient,current->power);
-        if((newNode->power) == (current->power)) {
-            printf("重複ㄌ\n");
-            current->coefficient += newNode->coefficient;
-            return;
-        }
-
-        if((newNode->power)>(heads->power)) {//insert head *4 3 (insert 5)
-            printf("投\n");
-            heads = newNode;
-            heads->next = current;
-            return;
-
-        }
-
-		if( ((newNode->power)<(current->power)) && (current->next == NULL) ){//only pushback 5 4 (insert 3)
-            printf(" 我是最後面的\n");
-            current->next = newNode;
+    while ((cur1 != NULL)&&(cur2 != NULL)) {
+        printf("我進while了\n");
+        if(((cur1->power)>(cur2->power))||cur2 == NULL){
+            printf("1>2\n");
+            newNode->power = cur1->power;
+            newNode->coefficient = cur1->coefficient;
             newNode->next = NULL;
-            return;
+            cur1 = cur1->next;
         }
-        /*
-        if((newNode->power)<(current->power) && (current->next->next == NULL)) {
-            printf(" 我是最後面的2\n");
-            current->next->next= newNode;
+        else if( ((cur1->power)<(cur2->power)) || cur1 == NULL){
+            printf("1<2\n");
+            newNode->power = cur2->power;
+            newNode->coefficient = cur2->coefficient;
             newNode->next = NULL;
-            return;
-        }*/
-        if( ((newNode->power)<(current->power)) && ((newNode->power)>(current->next->power)) ) {//insert middle 5 3 (insert:4)
-            printf(" 我在中間喔\n ");
-            newNode->next = current->next;
+            cur2 = cur2->next;
+        }
+        else{
+            printf("1=2\n");
+            newNode->power = cur1->power;
+            newNode->coefficient = cur1->coefficient + cur2->coefficient;
+            newNode->next = NULL;
+            cur1 = cur1->next;
+            cur2 = cur2->next;
+        }
+        if(*headAfterAdd == NULL){
+            printf("ㄍ投\n");
+            *headAfterAdd = newNode;
+            current = *headAfterAdd;
+        }
+        else{
+            printf("普普\n");
             current->next = newNode;
-            return;
-		}
-        printf("*\n");
-        current = current->next;
-	}
-}
-void traverals() {
-	if (heads == NULL) {
-		printf("The list is empty！\n");
-		return;
-	}
-
-	node *current = heads;
-    printf("多項式為:");
-	while (current != NULL) {
-		printf("%d^%d ",current->coefficient, current->power);
-		current = current->next;
-	}
-	printf("\n");
-}
-
-void add(){
-
+        }
+        printf("==輸出偵錯用字串==\n");
+        printf("cur (%d,%d)\n", current->coefficient, current->power);
+        //printf("cur1 (%d,%d),cur2(%d,%d)\n", cur1->coefficient, cur1->power, cur2->coefficient, cur2->power);
+    }
 }
 int main() {
     int coe, pow;
+    node* heads = NULL;
+    node* heads2 = NULL;
+    node *heads3 = NULL;
 
     while(1){
         printf("輸入多項式1(係數 次方):");
         scanf("%d %d",&coe,&pow);
 
         if(coe == 0){
-            traveral();
+            traveral(&heads);
             break;
         }
 
-        Insert(coe, pow);
+        Insert(coe, pow, &heads);
     }
 
     while(1){
@@ -167,13 +140,13 @@ int main() {
         scanf("%d %d",&coe,&pow);
 
         if(coe == 0){
-            traverals();
+            traveral(&heads2);
             break;
         }
 
-        Inserts(coe, pow);
+        Insert(coe, pow, &heads2);
     }
-    printf("相加結果:");
 
-
+    add(&heads, &heads2, &heads3);
+    traveral(&heads3);
 }
